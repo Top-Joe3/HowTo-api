@@ -7,14 +7,26 @@ const cors = require("cors");
 
 app.set("trust proxy", 1);
 
-const allowedOrigins = process.env.CLIENT_URLS.split(",").map((o) => o.trim());
+const allowedOrigins = process.env.CLIENT_URLS
+  ? process.env.CLIENT_URLS.split(",").map((o) => o.trim())
+  : [];
 
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin(origin, callback) {
+      // allow server-to-server / Postman / no-origin requests
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Not allowed by CORS"));
+    },
     credentials: true,
   }),
 );
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
