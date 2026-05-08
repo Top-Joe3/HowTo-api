@@ -14,6 +14,7 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "prisma generate && prisma migrate deploy",
     "start": "node app.js"
   },
   "dependencies": {
